@@ -11,6 +11,7 @@ router = Router()
 async def send_welcome(message: types.Message, state: FSMContext):
     await state.clear()
 
-    return await message.answer('<b>Добро пожаловать в бота для взаимодействия с МЭШ\n(school.mos.ru)</b>',
+    return await message.answer('<b>Добро пожаловать в бота для взаимодействия с '
+                                '<a href="https://school.mos.ru">МЭШ</a></b>',
                                 reply_markup=start_markup())
 

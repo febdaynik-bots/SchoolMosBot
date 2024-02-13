@@ -7,8 +7,8 @@ from keyboards.template_pagination import template_pagination_markup_by_list
 def list_homeworks_markup(homeworks: list, offset: int = 0, limit: int = 10) -> InlineKeyboardBuilder.as_markup:
 	markup = InlineKeyboardBuilder()
 
-	for chat in homeworks[offset:limit+offset]:
-		markup.button(text=f'{chat.subject_name}', callback_data=f'hw:info:{offset}')
+	for homework in homeworks[offset:limit+offset]:
+		markup.button(text=f'{homework.name}', callback_data=f'hw:info:{offset}:{homework.schedule_item_id}')
 	markup.adjust(2)
 
 	template_pagination_markup_by_list(
