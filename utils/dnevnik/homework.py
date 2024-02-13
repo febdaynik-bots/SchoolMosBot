@@ -10,6 +10,7 @@ from school_mos import errors
 
 from utils.get_week_days import get_week_boundaries
 from utils.dnevnik.types import HouseworkType, InfoHouseworkType, Teacher
+from utils.dnevnik.base import BaseClass
 
 
 async def make_dates(start_of_week: str, end_of_week: str) -> str:
@@ -35,7 +36,7 @@ async def get_schedule_id_by_lesson(shorts: list, date: str, subject_id: int, su
 				return int(lesson['schedule_item_id'])
 
 
-class CustomHomework(_Homework):
+class CustomHomework(BaseClass):
 	def __init__(self, api_instance: AUTH, session_aiohttp: aiohttp.ClientSession = None):
 		super().__init__(api_instance)
 		self.aiohttp = session_aiohttp

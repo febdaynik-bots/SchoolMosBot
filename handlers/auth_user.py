@@ -8,6 +8,8 @@ from database.models import Users
 from keyboards.default import back_markup
 from utils.dnevnik import async_auth
 
+import traceback
+
 router = Router()
 router.message.filter(IsAccessUserFilter(False))
 
@@ -38,22 +40,23 @@ async def AuthUserState_login_state(message: types.Message, state: FSMContext):
 
 
 @router.message(AuthUserState.password)
-async def AuthUserState_login_state(message: types.Message, state: FSMContext):
+async def AuthUserState_login_state(message: types.Message, state: FSMContext, user: Users):
 	data = await state.get_data()
 	await data['msg'].edit_reply_markup()
 
-	msg = await message.answer('Ожидайте, идёт проверка данных...', reply_markup=data['msg'].reply_markup)
+	msg = await message.answer('Ожидайте, идёт проверка данных...')
 	try:
 		auth_school_api = await async_auth.authStudent(data['login'], message.text)
 	except Exception as e:
+		traceback.print_exc()
 		await msg.edit_text(str(e)+'\n\nПопробуйте ввести другой логин', reply_markup=data['msg'].reply_markup)
 		await state.set_state(AuthUserState.login)
 		return await state.update_data(msg=msg)
 
 	await msg.edit_text('Аккаунт авторизован\nДанные сохраняются...', reply_markup=data['msg'].reply_markup)
-	Users.create(user_id=message.from_user.id, token=auth_school_api.token, first_name=message.from_user.first_name,
-				 username=message.from_user.username)
+	user.token = auth_school_api.token
+	user.save()
 
 	await msg.edit_text('Поздравляю. Вы авторизовались в системе',
-						reply_markup=back_markup('В главное меню', callback_data='back:start'))
+						reply_markup=back_markup('В главное меню'))
 	return await state.clear()

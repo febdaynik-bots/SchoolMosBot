@@ -1,4 +1,3 @@
-from aiogram import types
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from keyboards.template_pagination import template_pagination_markup_by_list
