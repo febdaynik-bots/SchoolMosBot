@@ -7,14 +7,11 @@ from keyboards.default import back_markup
 
 router = Router()
 
-# TODO: Доделать!!
-
 
 @router.callback_query(F.data == 'menu:homeworks')
 async def get_homeworks_callback(call: types.CallbackQuery, student: AUTH):
 	if student is None:
 		return await call.answer('Ошибка авторизации. Попробуйте чуть позже')
-	student.homework = CustomHomework(student)
 
 	try:
 		homeworks, start_of_week, end_of_week = await student.homework.get_by_week()
@@ -31,12 +28,10 @@ async def get_info_homework_callback(call: types.CallbackQuery, student: AUTH):
 
 	if student is None:
 		return await call.answer('Ошибка авторизации. Попробуйте чуть позже')
-	student.homework = CustomHomework(student)
 
 	try:
 		homework = await student.homework.get_by_id(homework_id=homework_id)
 	except Exception as e:
-		print(e)
 		return await call.answer('Возникла ошибка. Попробуйте ещё раз')
 
 	return await call.message.edit_text(f'🏘 Домашнее задание на <b>{homework.date}</b> по предмету <b>{homework.name}</b>\n\n'
@@ -52,12 +47,10 @@ async def pagination_homeworks_callback(call: types.CallbackQuery, student: AUTH
 
 	if student is None:
 		return await call.answer('Ошибка авторизации. Попробуйте чуть позже')
-	student.homework = CustomHomework(student)
 
 	try:
 		homeworks, start_of_week, end_of_week = await student.homework.get_by_week()
 	except Exception as e:
-		print(e)
 		return await call.answer('Возникла ошибка. Попробуйте ещё раз')
 
 	return await call.message.edit_reply_markup(reply_markup=list_homeworks_markup(

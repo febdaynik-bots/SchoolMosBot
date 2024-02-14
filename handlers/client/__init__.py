@@ -1,6 +1,6 @@
 from aiogram import Router
 
-from . import homeworks, get_scores, rating
+from . import homeworks, get_scores, rating, exit_account
 
 
 def register_routers():
@@ -8,7 +8,8 @@ def register_routers():
 	router.include_routers(
 		homeworks.router,
 		get_scores.router,
-		rating.router
+		rating.router,
+		exit_account.router,
 	)
 	return router
 
@@ -16,5 +17,6 @@ def register_routers():
 __all__ = [
 	'homeworks',
 	'get_scores',
-	'rating'
+	'rating',
+	'exit_account',
 ]

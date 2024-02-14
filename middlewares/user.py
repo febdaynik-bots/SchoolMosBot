@@ -5,6 +5,7 @@ from aiogram.types import Message, CallbackQuery
 from school_mos import AUTH
 
 from database.models import Users
+from utils.dnevnik import CustomHomework, CustomMarks, Rating
 
 
 class UsersMiddleware(BaseMiddleware):
@@ -21,11 +22,12 @@ class UsersMiddleware(BaseMiddleware):
 			user = Users.create(user_id=event.from_user.id, first_name=event.from_user.first_name,
 								username=event.from_user.username)
 
-
 		data['user'] = user
 		if user.token is not None:
 			try:
 				student = AUTH(token=user.token)
+				student.homework = CustomHomework(student)
+				student.marks = CustomMarks(student)
 			except Exception:
 				student = None
 		else:

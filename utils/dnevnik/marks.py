@@ -24,5 +24,13 @@ class CustomMarks(BaseClass):
 
 		return tuple_result
 
-	async def get_by_id(self, subject_id: int):
-		...
+	async def get_by_id(self, subject_id: int) -> SubjectMarksType:
+		result = await self._request(f'https://school.mos.ru/api/family/web/v1/subject_marks/for_subject',
+							method='get', params={'student_id': self.user.user_id, 'subject_id': subject_id},
+							headers={
+								"Cookie": f"auth_token={self.user.token};student_id={self.user.user_id}",
+								'Auth-Token': self.user.token,
+								'x-mes-subsystem': "familyweb"
+							})
+
+		return SubjectMarksType(**result)

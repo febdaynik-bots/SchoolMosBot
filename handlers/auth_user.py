@@ -32,8 +32,9 @@ async def AuthUserState_login_state(message: types.Message, state: FSMContext):
 	await data['msg'].edit_reply_markup()
 
 	login = message.text
+	await message.delete()
 
-	msg = await message.answer(f'Вы ввели логин: {login}\n\n'
+	msg = await message.answer(f'Вы ввели логин: <span class="tg-spoiler">{login}</span>\n\n'
 							   'Введите пароль от вашего аккаунта', reply_markup=data['msg'].reply_markup)
 	await state.update_data(login=login, msg=msg)
 	return await state.set_state(AuthUserState.password)
@@ -44,6 +45,8 @@ async def AuthUserState_login_state(message: types.Message, state: FSMContext, u
 	data = await state.get_data()
 	await data['msg'].edit_reply_markup()
 
+	await message.delete()
+
 	msg = await message.answer('Ожидайте, идёт проверка данных...')
 	try:
 		auth_school_api = await async_auth.authStudent(data['login'], message.text)
@@ -53,7 +56,7 @@ async def AuthUserState_login_state(message: types.Message, state: FSMContext, u
 		await state.set_state(AuthUserState.login)
 		return await state.update_data(msg=msg)
 
-	await msg.edit_text('Аккаунт авторизован\nДанные сохраняются...', reply_markup=data['msg'].reply_markup)
+	# await msg.edit_text('Аккаунт авторизован\nДанные сохраняются...', reply_markup=data['msg'].reply_markup)
 	user.token = auth_school_api.token
 	user.save()
 

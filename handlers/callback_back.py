@@ -7,6 +7,7 @@ router = Router(name='Router callback button')
 
 
 async def delete_message(call: types.CallbackQuery):
+    # Данное исключение появляется если была нажата кнопка "Назад" у сообщения, которому больше 48 часов
     try:
         await call.message.delete()
     except exceptions.TelegramBadRequest:
