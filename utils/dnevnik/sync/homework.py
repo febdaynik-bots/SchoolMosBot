@@ -70,7 +70,6 @@ class CustomHomework(BaseClass):
 					id=item_id,
 					schedule_item_id=schedule_item_id,
 					name=item_name,
-					subject_name=item_name,
 					is_done=item.get('is_done'),
 					date=item_date,
 					description=re.sub(r'\n{2,}', '\n', item["description"]),

@@ -41,8 +41,6 @@ class InfoHouseworkType(HouseworkType):
 
 
 class Marks(BaseModel):
-	id: int = Field(alias="subject_id")
-	name: str = Field(alias="subject_name")
 	comment: str
 	comment_exists: bool
 	control_form_name: str
@@ -57,6 +55,11 @@ class Marks(BaseModel):
 	value: str
 	values: typing.Optional[list] = None
 	weight: int
+
+
+class MarksType(Marks):
+	id: int = Field(alias="subject_id")
+	name: str = Field(alias="subject_name")
 
 
 class MarkPeriodType(BaseModel):

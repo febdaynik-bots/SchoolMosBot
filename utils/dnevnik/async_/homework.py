@@ -47,10 +47,9 @@ class Homework(AsyncBaseClass):
 			schedule_item_id = get_schedule_id_by_lesson(shorts, item_date, item_id, item_name)
 			result.append(
 				HouseworkType(
-					id=item_id,
-					schedule_item_id=schedule_item_id,
-					name=item_name,
+					subject_id=item_id,
 					subject_name=item_name,
+					schedule_item_id=schedule_item_id,
 					is_done=item.get('is_done'),
 					date=item_date,
 					description=re.sub(r'\n{2,}', '\n', item["description"]),
@@ -106,9 +105,9 @@ class Homework(AsyncBaseClass):
 							headers=self._get_headers())
 
 		return InfoHouseworkType(
-			id=result.get('subject_id'),
+			subject_id=result.get('subject_id'),
 			schedule_item_id=result.get('id'),
-			name=result.get('subject_name'),
+			subject_name=result.get('subject_name'),
 			room_number=result.get('room_number'),
 			homework=result['lesson_homeworks'][-1]['homework'],
 			teacher=Teacher(**result['teacher']),

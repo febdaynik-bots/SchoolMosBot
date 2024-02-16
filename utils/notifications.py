@@ -4,7 +4,7 @@ import typing
 
 from config import bot
 from database.models import Users, Notify
-from .dnevnik.notify.notifications import Notifications, Marks, HouseworkTypeByNotify
+from .dnevnik.notify.notifications import Notifications, MarksType, HouseworkTypeByNotify
 
 
 def getNoun(number, one, two, five):
@@ -29,7 +29,7 @@ async def make_text_homework_from_list(homeworks: typing.List[HouseworkTypeByNot
 	return '\n'.join(list_text_homeworks)
 
 
-async def make_text_marks_from_list(marks: typing.List[Marks]) -> str:
+async def make_text_marks_from_list(marks: typing.List[MarksType]) -> str:
 	list_text_marks = list()
 
 	for mark in marks:
@@ -84,7 +84,7 @@ async def student_notify():
 
 		count_notification = len(marks)+len(homeworks)
 		if count_notification > 0:
-			text = '<b>У вас {text_count_notifications}\n\n{texts}</b>'.format(
+			text = '<b>У вас {text_count_notifications}\n\n</b>{texts}'.format(
 				text_count_notifications=getNoun(count_notification, 'новое уведомление', 'новых уведомления',
 												 'новых уведомлений'),
 				texts=f'{text_homeworks}\n\n{text_marks}'

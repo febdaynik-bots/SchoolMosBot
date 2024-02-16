@@ -1,7 +1,7 @@
 import datetime
 import typing
 
-from utils.dnevnik.types import Marks, HouseworkTypeByNotify
+from utils.dnevnik.types import MarksType, HouseworkTypeByNotify
 from utils.dnevnik.notify.base import BaseNotify
 from utils.get_week_days import async_get_week_boundaries
 
@@ -34,7 +34,7 @@ class Notifications(BaseNotify):
 				'%Y-%m-%d') >= datetime.datetime.strptime(string_date, '%Y-%m-%d')
 		]
 
-	async def get_marks(self, string_date: str) -> typing.List[Marks]:
+	async def get_marks(self, string_date: str) -> typing.List[MarksType]:
 		start_of_week, end_of_week = await self._get_week()
 
 		try:
@@ -46,7 +46,7 @@ class Notifications(BaseNotify):
 			return []
 
 		return [
-			Marks(**res) for res in result['payload']
+			MarksType(**res) for res in result['payload']
 			if datetime.datetime.strptime(datetime.datetime.strptime(
 				res['created_at'],
 				'%Y-%m-%dT%H:%M:%S'
