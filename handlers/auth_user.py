@@ -58,6 +58,7 @@ async def AuthUserState_login_state(message: types.Message, state: FSMContext, u
 
 	# await msg.edit_text('Аккаунт авторизован\nДанные сохраняются...', reply_markup=data['msg'].reply_markup)
 	user.token = auth_school_api.token
+	user.student_id = auth_school_api.user_id
 	user.save()
 
 	await msg.edit_text('Поздравляю. Вы авторизовались в системе',

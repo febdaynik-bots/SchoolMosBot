@@ -1,7 +1,6 @@
 from aiogram import F, types, Router
 from school_mos import AUTH
 
-from utils.dnevnik import CustomHomework
 from keyboards.list_homeworks import list_homeworks_markup
 from keyboards.default import back_markup
 
@@ -36,7 +35,7 @@ async def get_info_homework_callback(call: types.CallbackQuery, student: AUTH):
 
 	return await call.message.edit_text(f'🏘 Домашнее задание на <b>{homework.date}</b> по предмету <b>{homework.name}</b>\n\n'
 										f'👨‍🏫 Преподаватель: <b>{homework.teacher.last_name} {homework.teacher.first_name} {homework.teacher.middle_name}</b>\n\n'
-										f'Задание: 	{homework.homework}',
+										f'Задание: 	{homework.homework}', disable_web_page_preview=True,
 										reply_markup=back_markup('« Назад', callback_data=f'hw:p:back:{offset}'))
 
 

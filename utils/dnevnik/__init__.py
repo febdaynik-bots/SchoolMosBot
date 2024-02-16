@@ -1,6 +1,8 @@
-from .homework import CustomHomework
-from .marks import CustomMarks
-from .rating import Rating
+from .sync.homework import CustomHomework
+from .sync.marks import CustomMarks
+from .sync.rating import Rating
+
+# Асинхронные методы лучше доставать через .dnevnik.async.
 
 
 __all__ = [

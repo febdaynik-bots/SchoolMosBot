@@ -3,11 +3,11 @@ import typing
 
 from school_mos.main import AUTH
 
-from utils.dnevnik.base import BaseClass
-from .types import RankShortType, SubjectRankType
+from utils.dnevnik.async_.base import AsyncBaseClass
+from utils.dnevnik.types import RankShortType, SubjectRankType
 
 
-class Rating(BaseClass):
+class Rating(AsyncBaseClass):
 	def __init__(self, api_instance: AUTH):
 		super().__init__(api_instance)
 
@@ -21,11 +21,7 @@ class Rating(BaseClass):
 							method='get',
 							params={'personId': self.user.person_id, 'beginDate': start_date_text,
 									'endDate': end_date_text},
-							headers={
-								"Cookie": f"auth_token={self.user.token};student_id={self.user.user_id}",
-								'Auth-Token': self.user.token,
-								'x-mes-subsystem': "familyweb"
-							})
+							headers=self._get_headers())
 
 		return [RankShortType(**i) for i in result]
 
@@ -36,10 +32,6 @@ class Rating(BaseClass):
 		result = await self._request(f'https://school.mos.ru/api/ej/rating/v1/rank/subjects',
 						 method='get',
 						 params={'personId': self.user.person_id, 'date': date},
-						 headers={
-							 "Cookie": f"auth_token={self.user.token};student_id={self.user.user_id}",
-							 'Auth-Token': self.user.token,
-							 'x-mes-subsystem': "familyweb"
-						 })
+						 headers=self._get_headers())
 
 		return [SubjectRankType(**i) for i in result]

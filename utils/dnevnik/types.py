@@ -14,10 +14,23 @@ class Teacher(BaseModel):
 
 
 class HouseworkType(BaseModel):
-	id: int
-	schedule_item_id: int
-	name: str
+	id: int = Field(alias='subject_id')
+	name: str = Field(alias='subject_name')
+	schedule_item_id: typing.Optional[int] = None
 	is_done: typing.Optional[bool] = None
+
+
+class HouseworkTypeByNotify(HouseworkType):
+	additional_materials: typing.Optional[typing.List[dict]] = []
+	attachments: typing.Optional[typing.List[dict]] = []
+	comments: typing.Optional[typing.List[dict]] = []
+	date: str
+	date_assigned_on: str
+	description: str
+	has_teacher_answer: bool
+	homework_entry_student_id: int
+	lesson_date_time: str
+	materials: typing.Optional[typing.List[dict]] = []
 
 
 class InfoHouseworkType(HouseworkType):
@@ -28,13 +41,14 @@ class InfoHouseworkType(HouseworkType):
 
 
 class Marks(BaseModel):
+	id: int = Field(alias="subject_id")
+	name: str = Field(alias="subject_name")
 	comment: str
 	comment_exists: bool
 	control_form_name: str
 	created_at: typing.Optional[str] = None
 	criteria: typing.Optional[str] = None
 	date: str
-	id: int
 	is_exam: bool
 	is_point: bool
 	original_grade_system_type: str

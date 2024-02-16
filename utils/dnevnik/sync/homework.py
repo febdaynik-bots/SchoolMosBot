@@ -4,16 +4,15 @@ import re
 import typing
 
 import requests
-import aiohttp
-from school_mos.main import _Homework, AUTH, HW_ATTACHMENTS_URL
+from school_mos.main import AUTH, HW_ATTACHMENTS_URL
 from school_mos import errors
 
 from utils.get_week_days import get_week_boundaries
 from utils.dnevnik.types import HouseworkType, InfoHouseworkType, Teacher
-from utils.dnevnik.base import BaseClass
+from utils.dnevnik.sync.base import BaseClass
 
 
-async def make_dates(start_of_week: str, end_of_week: str) -> str:
+def make_dates(start_of_week: str, end_of_week: str) -> str:
 	start_of_week_date = datetime.datetime.strptime(start_of_week, '%Y-%m-%d')
 	end_of_week_date = datetime.datetime.strptime(end_of_week, '%Y-%m-%d')
 
@@ -26,7 +25,7 @@ async def make_dates(start_of_week: str, end_of_week: str) -> str:
 	return ','.join(list_dates)
 
 
-async def get_schedule_id_by_lesson(shorts: list, date: str, subject_id: int, subject_name: str) -> int:
+def get_schedule_id_by_lesson(shorts: list, date: str, subject_id: int, subject_name: str) -> int:
 	for short in shorts:
 		if short['date'] != date:
 			continue
@@ -37,25 +36,10 @@ async def get_schedule_id_by_lesson(shorts: list, date: str, subject_id: int, su
 
 
 class CustomHomework(BaseClass):
-	def __init__(self, api_instance: AUTH, session_aiohttp: aiohttp.ClientSession = None):
-		super().__init__(api_instance)
-		self.aiohttp = session_aiohttp
+	def __init__(self, api_instance: AUTH, session: typing.Optional[requests.Session] = None):
+		super().__init__(api_instance, session)
 
-	async def _request(self, url: str, method: str = 'get', params: dict = None, data: dict = None,
-					   headers: dict = None) -> typing.Union[dict, list]:
-		session = requests.sessions.Session()
-
-		result = session.request(method, url, params=params, json=data, headers=headers, timeout=(15, 30))
-		return await self._check_result(result)
-
-	def _get_headers(self):
-		return {
-			"Cookie": f"auth_token={self.user.token};student_id={self.user.user_id}",
-			'Auth-Token': self.user.token,
-			'x-mes-subsystem': "familyweb"
-		}
-
-	async def _check_result(self, result: requests.models.Response) -> requests.models.Response:
+	def _check_result(self, result: requests.models.Response) -> requests.models.Response:
 		try:
 			result_json = result.json()
 		except (json.JSONDecoder, json.JSONDecodeError) as e:
@@ -72,7 +56,7 @@ class CustomHomework(BaseClass):
 
 		return result_json
 
-	async def __get_homework(self, data, shorts: list) -> typing.List[HouseworkType]:
+	def __get_homework(self, data, shorts: list) -> typing.List[HouseworkType]:
 		result = list()
 
 		for item in data:
@@ -80,7 +64,7 @@ class CustomHomework(BaseClass):
 			item_date = item.get('date')
 			item_id = item.get('subject_id', 0)
 			item_name = item.get('subject_name', '')
-			schedule_item_id = await get_schedule_id_by_lesson(shorts, item_date, item_id, item_name)
+			schedule_item_id = get_schedule_id_by_lesson(shorts, item_date, item_id, item_name)
 			result.append(
 				HouseworkType(
 					id=item_id,
@@ -98,7 +82,7 @@ class CustomHomework(BaseClass):
 			)
 		return result
 
-	async def get_by_week(self, current_date: typing.Optional[datetime.date] = None) -> typing.Tuple[
+	def get_by_week(self, current_date: typing.Optional[datetime.date] = None) -> typing.Tuple[
 		typing.List[HouseworkType],
 		str,
 		str
@@ -112,8 +96,8 @@ class CustomHomework(BaseClass):
 		elif current_date.weekday() == 6:
 			current_date += datetime.timedelta(days=1)
 
-		start_of_week, end_of_week = await get_week_boundaries(current_date)
-		data = await self._request(
+		start_of_week, end_of_week = get_week_boundaries(current_date)
+		data = self._request(
 			method='get',
 			url="https://school.mos.ru/api/family/web/v1/homeworks",
 			params={
@@ -123,27 +107,23 @@ class CustomHomework(BaseClass):
 			},
 			headers=self._get_headers())
 
-		shorts = await self._request("https://school.mos.ru/api/family/web/v1/schedule/short", 'get',
+		shorts = self._request("https://school.mos.ru/api/family/web/v1/schedule/short", 'get',
 			params={
 				'student_id': self.user.user_id,
-				'dates': await make_dates(start_of_week, end_of_week),
+				'dates': make_dates(start_of_week, end_of_week),
 			}, headers=self._get_headers())
 
 		return (
-			await self.__get_homework(data=data['payload'], shorts=shorts['payload']),
+			self.__get_homework(data=data['payload'], shorts=shorts['payload']),
 			start_of_week,
 			end_of_week
 		)
 
-	async def get_by_id(self, homework_id: int) -> InfoHouseworkType:
+	def get_by_id(self, homework_id: int) -> InfoHouseworkType:
 
-		result = await self._request(f'https://school.mos.ru/api/family/web/v1/lesson_schedule_items/{homework_id}',
+		result = self._request(f'https://school.mos.ru/api/family/web/v1/lesson_schedule_items/{homework_id}',
 							method='get', params={'student_id': self.user.user_id, 'type': 'OO'},
-							headers={
-								"Cookie": f"auth_token={self.user.token};student_id={self.user.user_id}",
-								'Auth-Token': self.user.token,
-								'x-mes-subsystem': "familyweb"
-							})
+							headers=self._get_headers())
 
 		return InfoHouseworkType(
 			id=result.get('subject_id'),

@@ -4,8 +4,9 @@ from aiogram import BaseMiddleware
 from aiogram.types import Message, CallbackQuery
 from school_mos import AUTH
 
+# from config import aiohttp_session
 from database.models import Users
-from utils.dnevnik import CustomHomework, CustomMarks, Rating
+from utils.dnevnik.async_ import Homework, Marks
 
 
 class UsersMiddleware(BaseMiddleware):
@@ -26,8 +27,8 @@ class UsersMiddleware(BaseMiddleware):
 		if user.token is not None:
 			try:
 				student = AUTH(token=user.token)
-				student.homework = CustomHomework(student)
-				student.marks = CustomMarks(student)
+				student.homework = Homework(student)
+				student.marks = Marks(student)
 			except Exception:
 				student = None
 		else:

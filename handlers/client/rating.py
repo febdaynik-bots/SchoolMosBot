@@ -1,7 +1,7 @@
 from aiogram import F, types, Router
 from school_mos import AUTH
 
-from utils.dnevnik import Rating
+from utils.dnevnik.async_ import Rating
 from utils.make_rank_place_emoji import make_rank_place_emoji
 from keyboards.rating import rating_markup
 

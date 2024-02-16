@@ -28,6 +28,7 @@ async def exit_account_handler(message: typing.Union[types.Message, types.Callba
 @router.callback_query(F.data == 'confirm_exit:accept')
 async def confirm_exit_accept_callback(call: types.CallbackQuery, user: Users):
 	user.token = None
+	user.student_id = None
 	user.save()
 
 	return await call.message.edit_text('Вы вышли из аккаунта',
