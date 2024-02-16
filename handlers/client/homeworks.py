@@ -30,7 +30,7 @@ async def get_info_homework_callback(call: types.CallbackQuery, student: AUTH):
 
 	try:
 		homework = await student.homework.get_by_id(homework_id=homework_id)
-	except Exception as e:
+	except Exception:
 		return await call.answer('Возникла ошибка. Попробуйте ещё раз')
 
 	return await call.message.edit_text(f'🏘 Домашнее задание на <b>{homework.date}</b> по предмету <b>{homework.name}</b>\n\n'
