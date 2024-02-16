@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import typing
 
@@ -90,3 +91,5 @@ async def student_notify():
 			)
 
 			await bot.send_message(chat_id=user.user_id, text=text)
+
+		await asyncio.sleep(1)
